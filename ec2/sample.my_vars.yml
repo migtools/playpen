@@ -1,5 +1,5 @@
 my_name: jwm
-project_tag: "{{ my_name }}_hack_podman_July2023"
+project_tag: "{{ my_name }}_playpen"
 
 # How many instances do we want to provision
 desired_num_instances: 1
