@@ -3,4 +3,6 @@ collections:
 - amazon.aws
 - community.aws
 - ansible.posix
+- middleware_automation.common
+- middleware_automation.wildfly
 
