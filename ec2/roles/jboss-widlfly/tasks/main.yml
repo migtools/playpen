@@ -15,23 +15,21 @@
     wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
     wildfly_version: '22.0.1.Final'
     wildfly_config_base: standalone.xml
-    wildfly_instance_id: "{{ item }}"
-    instance_name: "wildfly-{{ wildfly_instance_id }}"
+    instance_name: "wildfly"
     wildfly_config_name: "{{ instance_name }}.xml"
     wildfly_basedir_prefix: "/opt/{{ instance_name }}"
-    service_systemd_env_file: "/etc/wildfly-{{ item }}.conf"
-    service_systemd_conf_file: "/usr/lib/systemd/system/wildfly-{{ item }}.service"
-  loop: "{{ range(0,1) | list }}"
+    service_systemd_env_file: "/etc/wildfly.conf"
+    service_systemd_conf_file: "/usr/lib/systemd/system/wildfly.service"
   include_role:
     name: middleware_automation.wildfly.wildfly_systemd
 
-- name: "Wait for each instance HTTP ports to become available."
+- name: "Wait for HTTP port to become available."
   vars:
     ports: '8080'
   ansible.builtin.wait_for:
     port: "{{ ports }}"
 
-- name: "Checks that WildFly server is running and accessible."
+- name: "Verify WildFly server is running and accessible."
   become: yes
   vars:
     ports: '8080'
