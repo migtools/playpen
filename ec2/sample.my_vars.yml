@@ -1,0 +1,53 @@
+my_name: jwm
+project_tag: "{{ my_name }}_playpen"
+
+# How many instances do we want to provision
+desired_num_instances: 1
+
+region_name: "us-east-1"
+key_name: '{{ project_tag }}_keypair'
+ec2_ssh_key_dir: "./keys"
+ec2_ssh_key_file_path: "{{ ec2_ssh_key_dir }}/{{ project_tag }}_{{ region_name }}.pem"
+ansible_ssh_private_key_file: "{{ ec2_ssh_key_file_path }}"
+
+##
+# If you are running a Fedora AMI you need to ensure your ./ansible.cfg file has the following:
+# remote_user = fedora
+#
+# If you are running a CentOS AMI you need to ensure your ./ansible.cfg file has the following:
+# remote_user = ec2-user
+##
+ami_owners: 125523088429 # CentOS/Fedora Owner ID
+#ami_name_filter: "CentOS Stream 9*"
+#ami_name_filter: "CentOS Stream 8*"
+ami_name_filter: "Fedora-Cloud-Base-38-*"
+
+# x86_64
+architecture: 'x86_64'
+#instance_type: 't3.micro'
+instance_type: 't3.large'
+#instance_type: 't3.2xlarge'
+
+# arm64
+#architecture: 'arm64'
+# https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-arm64.html
+# https://aws.amazon.com/ec2/instance-types/t4/
+# https://aws.amazon.com/ec2/spot/pricing/
+#instance_type: 't4g.medium'
+
+
+# VPC
+vpc_cidr: 10.10.0.0/24
+vpc_name: "{{ project_tag }} VPC"
+ 
+# Subnet
+subnet_name: "{{ project_tag }} Subnet"
+subnet_cidr: 10.10.0.0/26
+ 
+# Internet Gateway Name
+igw_name: "{{ project_tag }} Traffic IGW"
+
+route_name: "{{ project_tag }} Route"
+ 
+security_group_name: "{{ project_tag }} Ansible Security Group"
+security_group_description: "{{ security_group_name }}"

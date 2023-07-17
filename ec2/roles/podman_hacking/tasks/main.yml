@@ -1,0 +1,81 @@
+---
+# tasks file for podman_hacking
+
+- name: get user home directory
+  shell: >
+    getent passwd `whoami` | awk -F: '{ print $6 }'
+  changed_when: false
+  register: user_home
+
+- name: Make a directory for source checkouts
+  file:
+    path: "{{ user_home.stdout }}/src"
+    state: directory
+
+
+- name: Enable Fedora Copr for Podman Next
+  community.general.copr:
+    name: rhcontainerbot/podman-next
+  become: yes
+
+- name: Install/Upgrade podman devel deps
+  dnf:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - btrfs-progs-devel 
+    - conmon 
+    - containernetworking-plugins 
+    - containers-common 
+    - crun 
+    - device-mapper-devel 
+    - git 
+    - glib2-devel 
+    - glibc-devel 
+    - glibc-static 
+    - go 
+    - golang-github-cpuguy83-md2man 
+    - gpgme-devel 
+    - iptables 
+    - libassuan-devel 
+    - libgpg-error-devel 
+    - libseccomp-devel 
+    - libselinux-devel 
+    - make 
+    - pkgconfig
+    # Other deps I found I needed beyond what is documented
+    - netcat
+    - openssl
+  become: yes
+
+# Installing podman4 RPM to get associated deps, will manually remove later and use what we build from source
+- name: Install/Upgrade misc packages
+  dnf:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - vim
+    - jq
+    - tig
+    - podman
+  become: yes
+
+#Note below is checking out a fork
+- git:
+    repo: 'https://github.com/jwmatthews/podman.git'
+    dest: "{{ user_home.stdout }}/src/podman"
+
+- name: make install.tools
+  ansible.builtin.command: make install.tools
+  args:
+    chdir: "{{ user_home.stdout }}/src/podman"
+
+- name: make binaries
+  ansible.builtin.command: make binaries
+  args:
+    chdir: "{{ user_home.stdout }}/src/podman"
+
+- name: Copy a hack for helping to run podman tests
+  ansible.builtin.copy:
+    src: files/run_one_test.sh
+    dest: "{{ user_home.stdout }}/src/podman" 
