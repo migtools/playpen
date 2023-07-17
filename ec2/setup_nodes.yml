@@ -4,7 +4,7 @@
     hosts: "role_{{ project_tag }}_node"
     roles:
     # Need to update below, but leaving it now for something to run
-    - role: podman_hacking 
+    - role: jboss-widlfly 
       # intended to run as 'fedora' user, so no on 'become'
       become: no 
 
