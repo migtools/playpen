@@ -1,0 +1,7 @@
+---
+# defaults file for jboss-eap
+jboss:
+  user: jboss-user
+  group: jboss-user
+  group_id: 500
+  user_home: "/home/fedora/opt/jboss"
