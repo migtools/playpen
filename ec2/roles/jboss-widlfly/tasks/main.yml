@@ -5,7 +5,7 @@
 - name: "install Wildfly/EAP"
   vars:
     wildfly_version: '22.0.1.Final'
-    wildfly_download_baseurl: "https://download.jboss.org/wildfly"
+    wildfly_download_baseurl: "https://download.jboss.org/wildfly" 
     wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
   include_role:
     name: middleware_automation.wildfly.wildfly_install
@@ -30,9 +30,9 @@
     port: "{{ ports }}"
 
 - name: "Verify WildFly server is running and accessible."
-  become: yes
+  become: true
   vars:
     ports: '8080'
   ansible.builtin.get_url:
     url: "http://localhost:{{ ports }}/"
-    dest: "/opt/{{ ports }}"
+    dest: "/tmp/{{ ports }}"

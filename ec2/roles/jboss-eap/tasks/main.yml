@@ -31,3 +31,17 @@
     service_systemd_conf_file: "/usr/lib/systemd/system/jboss-eap.service"
   include_role:
     name: middleware_automation.wildfly.wildfly_systemd
+
+- name: "Wait for HTTP port to become available."
+  vars:
+    ports: '8080'
+  ansible.builtin.wait_for:
+    port: "{{ ports }}"
+
+- name: "Verify EAP server is running and accessible."
+  become: true
+  vars:
+    ports: '8080'
+  ansible.builtin.get_url:
+    url: "http://localhost:{{ ports }}/"
+    dest: "/tmp/{{ ports }}"

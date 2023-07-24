@@ -58,7 +58,7 @@ Run `./setup_node.sh`
 
 ### To create jboss EAP instance
 
-* Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.zip`. Make sure the file type is `zip`.
+* We will be using offline installation for this role.Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.zip`. Make sure the file type is `zip`.
 
 * Make sure to uncomment the role `jboss-eap` and comment `jboss-wildfly` in `setup_node.yml`
 
