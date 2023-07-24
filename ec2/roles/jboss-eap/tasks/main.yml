@@ -1,132 +1,33 @@
 ---
-# tasks file for jboss-eap
-- name: get user home directory
-  shell: >
-    getent passwd `whoami` | awk -F: '{ print $6 }'
-  changed_when: false
-  register: user_home
-
-- name: Make a directory for source checkouts
-  file:
-    path: "{{ user_home.stdout }}/src"
-    state: directory
-
-- name: get the java version
-  shell: >
-    java -version 
-  register: java_version
-  ignore_errors: true
-  
-
-- name: print java version
-  debug:
-    msg: "Java Version: {{ java_version }}"
-  when: java_version.rc==0
-
-- name: Install openjdk 1.8 and dependencies
-  dnf:
-    name: "{{ item }}"
-    state: present
-  with_items: 
-    - java-1.8.0-openjdk
-  become: yes
-  when: java_version.rc!=0
-
-- name: install unzip and tar
-  ansible.builtin.yum:
-    name:
-      - unzip
-      - tar
-    state: present
-  become: true
-
-- name: Create jboss home directory if it does not exist
-  ansible.builtin.file:
-    path: "{{ user_home.stdout }}/opt/jboss"
-    state: directory
-    mode: '0755'
-
-
-
-- name: "Create groups for EAP"
-  become: yes
-  ansible.builtin.group:
-    name: "{{ item.group }}"
-    system: yes
-    state: present
-    gid: "{{ item.group_id }}"
-  with_items:
-    - "{{ jboss }}"
-
-- name: "Create users for EAP"
-  become: yes
-  ansible.builtin.user:
-    name: "{{ item.user }}"
-    comment: "{{ item.user }} user"
-    uid: "{{ item.group_id }}"
-    group: "{{ item.group }}"
-    home: "{{ item.user_home }}"
-    shell: "/bin/sh"
-  with_items:
-    - "{{ jboss }}"
-
-- name: Recursively change ownership of Jboss home directory
-  ansible.builtin.file:
-    path: "{{ user_home.stdout }}/opt/jboss"
-    state: directory
-    recurse: yes
-    owner: "{{ jboss.user }}"
-    group: "{{ jboss.group }}"
-  become: yes
-
-- name: Check if Jboss EAP executable exists
-  stat:
-    path: "{{ user_home.stdout }}/opt/jboss/jboss-eap-7.4.0.zip"
-  register: file_stat
-
-
-- name: Copy Jboss EAP 7.4 to /opt/jboss
-  ansible.builtin.copy:
-    src: ./files/jboss-eap-7.4.0.zip
-    dest: "{{ user_home.stdout }}/opt/jboss/jboss-eap-7.4.0.zip"
-    owner: "{{ jboss.user }}"
-    group: "{{ jboss.group }}"
-  when: not file_stat.stat.exists
-  become: yes
-
-
-- name: Extract Jboss EAP 7.4 to /opt/jboss
-  ansible.builtin.unarchive:
-    src: "{{ user_home.stdout }}/opt/jboss/jboss-eap-7.4.0.zip"
-    dest: "{{ user_home.stdout }}/opt/jboss"
-    remote_src: yes
-    owner: "{{ jboss.user }}"
-    group: "{{ jboss.group }}"
-  become: yes
-  when: not file_stat.stat.exists
-
-
-- name: Set JBoss EAP home
-  ansible.builtin.lineinfile:
-    path: "{{ user_home.stdout }}/opt/jboss/jboss-eap-7.4/bin/standalone.conf"
-    line: "export JBOSS_HOME={{ user_home.stdout }}/opt/jboss/jboss-eap-7.4"
-    state: present
-  become: yes
-
-
-- name: Start JBoss server
-  command:
-    cmd: "./standalone.sh"
-    chdir: "{{ user_home.stdout }}/opt/jboss/jboss-eap-7.4/bin"
-  become: yes
-
-- name: "Verify EAP server is running and accessible."
-  become: yes
+- name: "JBoss EAP installation and configuration 1"
   vars:
-    ports: '8080'
-  ansible.builtin.get_url:
-    url: "http://localhost:{{ ports }}/"
-    dest: "/tmp/{{ ports }}"
+    wildfly_install_workdir: '/opt'
+    wildfly_version: '7.4'
+    install_name: jboss-eap
+    wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
+    wildfly_archive_filename: "{{ install_name }}-{{ wildfly_version }}.zip"
+    wildfly_user: "{{ install_name }}"
+    wildfly_group: "{{ install_name }}"
+    wildfly_config_base: standalone.xml
+    wildfly_home: "{{ wildfly_install_workdir }}/{{ install_name }}-{{ wildfly_version }}"
+    wildfly_offline_install: true
+  include_role:
+    name: middleware_automation.wildfly.wildfly_install
 
-   
-  
+
+- name: "enable service"
+  vars:
+    wildfly_config_base: 'standalone.xml'
+    install_name: jboss-eap
+    wildfly_basedir_prefix: "/opt/{{ install_name }}"
+    wildfly_config_name: "{{ install_name }}"
+    wildfly_instance_name: "{{ install_name }}"
+    wildfly_user: "{{ install_name }}"
+    wildfly_group: "{{ install_name }}"
+    wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
+    wildfly_version: '7.4'
+    wildfly_home: /opt/jboss-eap-7.4
+    service_systemd_env_file: "/etc/jboss-eap.conf"
+    service_systemd_conf_file: "/usr/lib/systemd/system/jboss-eap.service"
+  include_role:
+    name: middleware_automation.wildfly.wildfly_systemd
