@@ -3,9 +3,14 @@
   - name: "Run tasks to install Wildfly/EAP"
     hosts: "role_{{ project_tag }}_node"
     roles:
-    # Need to update below, but leaving it now for something to run
-    - role: jboss-widlfly 
+    # See Role's readme for more info
+    - role: jboss-eap 
       # intended to run as 'fedora' user, so no on 'become'
       become: no 
-
+   
+    # intended to run as 'fedora' user, so no on 'become'
+    # uncomment the below lines if you'd like to install wildfly and comment jboss-eap role
+    
+    #- role: jboss-wildfly   
+    #  become: no 
   
