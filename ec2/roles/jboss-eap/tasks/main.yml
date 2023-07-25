@@ -2,14 +2,14 @@
 - name: "JBoss EAP installation and configuration 1"
   vars:
     wildfly_install_workdir: '/opt'
-    wildfly_version: '7.4'
+    wildfly_version: '7.4.0'
     install_name: jboss-eap
     wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
     wildfly_archive_filename: "{{ install_name }}-{{ wildfly_version }}.zip"
     wildfly_user: "{{ install_name }}"
     wildfly_group: "{{ install_name }}"
     wildfly_config_base: standalone.xml
-    wildfly_home: "{{ wildfly_install_workdir }}/{{ install_name }}-{{ wildfly_version }}"
+    wildfly_home: "{{ wildfly_install_workdir }}/{{ install_name }}-{{ 7.4 }}"
     wildfly_offline_install: true
   include_role:
     name: middleware_automation.wildfly.wildfly_install
@@ -25,7 +25,7 @@
     wildfly_user: "{{ install_name }}"
     wildfly_group: "{{ install_name }}"
     wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
-    wildfly_version: '7.4'
+    wildfly_version: '7.4.0'
     wildfly_home: /opt/jboss-eap-7.4
     service_systemd_env_file: "/etc/jboss-eap.conf"
     service_systemd_conf_file: "/usr/lib/systemd/system/jboss-eap.service"
@@ -45,3 +45,10 @@
   ansible.builtin.get_url:
     url: "http://localhost:{{ ports }}/"
     dest: "/tmp/{{ ports }}"
+
+- name: Display localhost:8080 content
+  shell: "cat /tmp/8080"
+  register: out
+
+- name: "INFO: Display localhost:8080 content"
+  debug: var=out.stdout_lines

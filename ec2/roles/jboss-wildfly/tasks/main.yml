@@ -36,3 +36,10 @@
   ansible.builtin.get_url:
     url: "http://localhost:{{ ports }}/"
     dest: "/tmp/{{ ports }}"
+
+- name: Display localhost:8080 content
+  shell: "cat /tmp/8080"
+  register: out
+
+- name: "INFO: Display localhost:8080 content"
+  debug: var=out.stdout_lines

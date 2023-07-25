@@ -52,15 +52,15 @@ This directory contains ansible automation to create a single ec2 host and insta
 3. 
 ### To create jboss wildfly instance
 
-* Make sure to uncomment the role `jboss-wildfly` and comment `jboss-eap` in `setup_nodes.yml`
+* Make sure to set the role to `jboss-wildfly` in `my_vars.yml`
 
 Run `./setup_nodes.sh`
 
 ### To create jboss EAP instance
 
-* We will be using offline installation for this role.Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.zip`. Make sure the file type is `zip`.
+* We will be using offline installation for this role.Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.0.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.0.zip`. Make sure the file type is `zip`.
 
-* Make sure to uncomment the role `jboss-eap` and comment `jboss-wildfly` in `setup_nodes.yml`
+* Make sure to set the role to `jboss-eap` in `my_vars.yml`
 
 Run `./setup_nodes.sh`
 

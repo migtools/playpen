@@ -4,13 +4,8 @@
     hosts: "role_{{ project_tag }}_node"
     roles:
     # See Role's readme for more info
-    - role: jboss-eap 
+    - role: "{{ role_name }}"
       # intended to run as 'fedora' user, so no on 'become'
       become: no 
    
-    # intended to run as 'fedora' user, so no on 'become'
-    # uncomment the below lines if you'd like to install wildfly and comment jboss-eap role
-    
-    #- role: jboss-wildfly   
-    #  become: no 
   

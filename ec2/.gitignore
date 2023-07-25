@@ -1,4 +1,5 @@
 my_vars.yml
 env
 keys
-
+wildfly*.zip
+jboss*.zip
