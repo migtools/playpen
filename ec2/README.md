@@ -49,7 +49,21 @@ This directory contains ansible automation to create a single ec2 host and insta
 ## To create the environments
 1. `cp sample.my_vars.yml my_vars.yml`
 2. `./create_infra.sh`
-3. `./setup_node.sh`
+3. 
+### To create jboss wildfly instance
+
+* Make sure to set the role to `jboss-wildfly` in `my_vars.yml`
+
+Run `./setup_nodes.sh`
+
+### To create jboss EAP instance
+
+* We will be using offline installation for this role.Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.0.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.0.zip`. Make sure the file type is `zip`.
+
+* Make sure to set the role to `jboss-eap` in `my_vars.yml`
+
+Run `./setup_nodes.sh`
+
 4. ssh into an instance and use: `ssh -i keys/mykeyname.pem fedora@ec2-example-compute-1.amazonaws.com`
    * note the usage of `fedora` as user name
 

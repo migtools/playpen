@@ -1,0 +1,45 @@
+---
+# tasks file for jboss-widlfly
+
+
+- name: "install Wildfly/EAP"
+  vars:
+    wildfly_version: '22.0.1.Final'
+    wildfly_download_baseurl: "https://download.jboss.org/wildfly" 
+    wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
+  include_role:
+    name: middleware_automation.wildfly.wildfly_install
+
+- name: "enable service"
+  vars:
+    wildfly_java_package_name: java-1.8.0-openjdk-devel.x86_64
+    wildfly_version: '22.0.1.Final'
+    wildfly_config_base: standalone.xml
+    instance_name: "wildfly"
+    wildfly_config_name: "{{ instance_name }}.xml"
+    wildfly_basedir_prefix: "/opt/{{ instance_name }}"
+    service_systemd_env_file: "/etc/wildfly.conf"
+    service_systemd_conf_file: "/usr/lib/systemd/system/wildfly.service"
+  include_role:
+    name: middleware_automation.wildfly.wildfly_systemd
+
+- name: "Wait for HTTP port to become available."
+  vars:
+    ports: '8080'
+  ansible.builtin.wait_for:
+    port: "{{ ports }}"
+
+- name: "Verify WildFly server is running and accessible."
+  become: true
+  vars:
+    ports: '8080'
+  ansible.builtin.get_url:
+    url: "http://localhost:{{ ports }}/"
+    dest: "/tmp/{{ ports }}"
+
+- name: Display localhost:8080 content
+  shell: "cat /tmp/8080"
+  register: out
+
+- name: "INFO: Display localhost:8080 content"
+  debug: var=out.stdout_lines
