@@ -1,0 +1,9 @@
+---
+# defaults file for jboss-app-deploy
+
+maven_deploy: false
+warfile_deploy: true
+app_path: .
+app_name: helloworld
+
+

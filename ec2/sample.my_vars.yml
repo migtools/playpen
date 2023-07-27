@@ -13,7 +13,7 @@ ansible_ssh_private_key_file: "{{ ec2_ssh_key_file_path }}"
 # use this varivble to specify the role you would to install. 
 # options = jboss-wildfly | jboss-eap
 role_name: jboss-wildfly
-
+app_role: jboss-app-deploy
 ##
 # If you are running a Fedora AMI you need to ensure your ./ansible.cfg file has the following:
 # remote_user = fedora
