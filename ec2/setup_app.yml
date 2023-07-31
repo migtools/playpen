@@ -1,0 +1,11 @@
+#
+---
+  - name: "Run tasks to install Wildfly/EAP"
+    hosts: "role_{{ project_tag }}_node"
+    roles:
+    # See Role's readme for more info
+    - role: "{{ app_role }}"
+      # intended to run as 'fedora' user, so no on 'become'
+      become: no 
+   
+  

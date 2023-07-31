@@ -92,7 +92,7 @@
   when: maven_deploy 
 
 - name: Deploy the application with Maven to EAP
-  ansible.builtin.shell: mvn clean install wildfly:deploy
+  ansible.builtin.shell: mvn clean package wildfly:deploy
   args:
     chdir: "/home/fedora/local/{{ app_name }}"  
   when: maven_deploy 

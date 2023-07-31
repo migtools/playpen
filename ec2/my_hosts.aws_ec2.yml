@@ -9,7 +9,7 @@ filters:
   tag:Name:
     # ** Change Below to your Project Tag **
     # I don't know how to include {{ project_tag }}
-    - jwm_playpen*
+    - sraghuna_jboss*
   instance-state-name : running
 keyed_groups:
   - prefix: role

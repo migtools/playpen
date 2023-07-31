@@ -84,6 +84,14 @@
             ports:
             - 6443
             cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 8080
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 9990
+            cidr_ip: 0.0.0.0/0
         state: "present"
       register: security_group
 
