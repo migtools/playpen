@@ -25,22 +25,14 @@
   when: warfile_deploy
   become: true
 
-- name: Sleep for 60 seconds to allow deployment to be complete
-  ansible.builtin.wait_for:
-    timeout: 60
-  delegate_to: localhost
+- name: Pause play until a URL is reachable from this host
+  ansible.builtin.uri:
+    url: "http://localhost:8080/{{ app_name }}/HelloWorld"
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 10 
+  delay: 5 
 
-- name: "Verify if the app is deployed and accessible."
-  become: true
-  vars:
-    ports: '8080'
-  ansible.builtin.get_url:
-    url: "http://localhost:{{ ports }}/{{ app_name }}/HelloWorld"
-    dest: "/tmp/{{ ports }}"
-
-- name: Display localhost:8080 content
-  shell: "cat /tmp/8080"
-  register: out
-
-- name: "INFO: Display localhost:8080 content"
-  debug: var=out.stdout_lines
+- name: "INFO: Display localhost:8080 status"
+  debug: var=result.status
