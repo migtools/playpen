@@ -67,6 +67,15 @@ Run `./setup_nodes.sh`
 4. ssh into an instance and use: `ssh -i keys/mykeyname.pem fedora@ec2-example-compute-1.amazonaws.com`
    * note the usage of `fedora` as user name
 
+## To install `Helloworld` application
+
+1. Make sure that the variable `app_role: jboss-app-deploy` is set in `my_vars.yml` file 
+
+2. Run `./setup_app.sh`
+
+3. Once deployed, access the app here - `http://<your ec2 instance name>:8080/helloworld/HelloWorld`
+
+_Note: It takes a few seconds for the app to be apployed, hence the added wait time in the play_ 
 ## To delete the environments
 1. `./delete_infra.sh`
 

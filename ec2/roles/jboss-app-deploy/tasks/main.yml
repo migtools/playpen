@@ -1,0 +1,38 @@
+---
+# tasks file for jboss-app-deploy
+
+- name: Create /home/fedora/local directory
+  file:
+    path: /home/fedora/local
+    state: directory
+    owner: fedora
+    group: fedora
+
+- name: Copy the war  to /home/fedora/local
+  ansible.builtin.synchronize:
+    src: "{{ role_path }}/files/{{ app_name }}.war"
+    dest: "/home/fedora/local/"
+  when: warfile_deploy
+
+- name: Deploy the application with Maven to EAP
+  ansible.builtin.copy:
+    src: "/home/fedora/local/{{ app_name }}.war"
+    dest: "{{ jboss_install_home }}/deployments/"
+    remote_src: yes
+    owner: "{{ jboss_owner }}"
+    group: "{{ jboss_group }}"
+    mode: '0644'
+  when: warfile_deploy
+  become: true
+
+- name: Pause play until a URL is reachable from this host
+  ansible.builtin.uri:
+    url: "http://localhost:8080/{{ app_name }}/HelloWorld"
+    method: GET
+  register: result
+  until: result.status == 200
+  retries: 10 
+  delay: 5 
+
+- name: "INFO: Display localhost:8080 status"
+  debug: var=result.status

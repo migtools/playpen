@@ -1,0 +1,11 @@
+---
+# defaults file for jboss-app-deploy
+
+maven_deploy: false
+warfile_deploy: true
+app_path: .
+app_name: helloworld
+jboss_install_home: /opt/jboss-eap
+jboss_owner: jboss-eap
+jboss_group: jboss-eap
+

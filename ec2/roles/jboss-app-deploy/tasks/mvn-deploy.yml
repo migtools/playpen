@@ -1,0 +1,100 @@
+---
+
+
+- name: Check if Maven is installed
+  ansible.builtin.command: 
+    cmd: mvn --version
+  ignore_errors: true
+  register: mvn_output
+
+- name: Display Maven version
+  debug:
+    var: mvn_output.stdout_lines
+  when: mvn_output.rc == 0
+
+- name: when Maven is not installed
+  debug:
+    msg: "Maven is not installed on the target machine."
+  when: mvn_output.rc != 0
+
+- name: Download Maven 3.9.3 archive
+  ansible.builtin.get_url:
+    url: "https://dlcdn.apache.org/maven/maven-3/3.9.3/binaries/apache-maven-3.9.3-bin.tar.gz"
+    dest: "/tmp/apache-maven-3.9.3-bin.tar.gz"
+  when: mvn_output.rc != 0
+
+- name: Extract Maven archive
+  ansible.builtin.unarchive:
+    src: "/tmp/apache-maven-3.9.3-bin.tar.gz"
+    dest: ./
+    remote_src: yes
+    creates: "./apache-maven-3.9.3"
+  #become: true
+  when: mvn_output.rc != 0
+
+- name: Set up environment variables for Maven
+  blockinfile:
+    path: /home/fedora/.bashrc
+    block: |
+      # Maven Environment Variables
+      export MAVEN_HOME=/home/fedora/apache-maven-3.9.3
+      export PATH=$PATH:$MAVEN_HOME/bin
+ 
+
+- name: Load Maven environment variables for the current session
+  ansible.builtin.shell: source /home/fedora/.bashrc
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}"
+ 
+
+- name: Verify Maven installation
+  ansible.builtin.command: 
+    cmd: mvn --version
+  register: mvn_output
+
+- name: Display Maven version
+  debug:
+    var: mvn_output.stdout_lines
+  when: mvn_output.rc == 0
+
+- name: Create /home/fedora/local directory
+  file:
+    path: /home/fedora/local
+    state: directory
+    owner: fedora
+    group: fedora
+
+- name: Check local path
+  ansible.builtin.stat:
+    path: "{{ lookup('env', 'PWD') }}"
+  register: local_path
+  delegate_to: localhost
+
+- name: Copy the folder recursively to /home/fedora/local
+  ansible.builtin.synchronize:
+    src: "{{ local_path.stat.path }}/{{ app_name }}"
+    dest: "/home/fedora/local/"
+  when: maven_deploy
+
+
+
+- name: Verify the copied folder
+  ansible.builtin.shell: ls /home/fedora/local/{{ app_name }}  
+  register: copied_folder
+  when: maven_deploy  
+
+
+- name: Display the copied folder content
+  debug:
+    var: copied_folder.stdout_lines
+  when: maven_deploy 
+
+- name: Deploy the application with Maven to EAP
+  ansible.builtin.shell: mvn clean package wildfly:deploy
+  args:
+    chdir: "/home/fedora/local/{{ app_name }}"  
+  when: maven_deploy 
+
+
