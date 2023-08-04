@@ -5,4 +5,5 @@ collections:
 - ansible.posix
 - middleware_automation.common
 - middleware_automation.wildfly
+- kubernetes.core
 
