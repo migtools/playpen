@@ -1,0 +1,63 @@
+---
+- name: "Deploy helloworld app to openshift"
+  hosts: localhost
+  connection: local
+  vars:
+    k8s_namespace: eap-testing
+    k8s_name: helloworld
+
+  tasks:
+  - name: Check local path
+    ansible.builtin.stat:
+      path: "{{ lookup('env', 'PWD') }}"
+    register: local_path
+
+  - name: Create a k8s namespace
+    kubernetes.core.k8s:
+      name: "{{ k8s_namespace }}"
+      api_version: v1
+      kind: Namespace
+      state: present
+
+  - name: Add EAP helm repo
+    kubernetes.core.helm_repository:
+      name: jboss-eap
+      repo_url: "https://jbossas.github.io/eap-charts/"
+
+  - name: Deploy helloworld app
+    kubernetes.core.helm:
+      name: "{{ k8s_name }}"
+      chart_ref: jboss-eap/eap74
+      release_namespace: "{{ k8s_namespace }}"
+      values_files:
+        - "{{ local_path.stat.path }}/manifests/helm.yaml"
+
+  - name: Wait till the Deployment is created
+    kubernetes.core.k8s_info:
+      kind: Deployment
+      wait: yes
+      name: "{{ k8s_name }}"
+      namespace: "{{ k8s_namespace }}"
+      wait_sleep: 5
+      wait_timeout: 360
+
+  - name: Get the route
+    kubernetes.core.k8s_info:
+      kind: Route
+      name: "{{ k8s_name }}"
+      namespace: "{{ k8s_namespace }}"
+    register: route
+
+  - name: print route of the deployed app
+    debug:
+      msg: "{{ route.resources[0].spec.host }}"
+
+  - name: Navigate to the URL of the app
+    ansible.builtin.uri:
+      url: "https://{{ route.resources[0].spec.host }}/HelloWorld"
+      method: GET
+      validate_certs: no
+    register: result
+
+  - name: "INFO: Display result"
+    debug: var=result.status
