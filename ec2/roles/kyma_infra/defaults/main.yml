@@ -1,0 +1,15 @@
+---
+# defaults file for kyma_infra
+---
+# defaults file for jboss-app-deploy
+
+maven_deploy: false
+app_path: .
+app_name: helloworld
+git_url: 
+javaee_git_branch: javaee
+quarkus_git_branch: quarkus
+jboss_install_home: /opt/jboss-eap
+jboss_owner: jboss-eap
+jboss_group: jboss-eap
+

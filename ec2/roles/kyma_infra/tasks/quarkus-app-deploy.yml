@@ -1,0 +1,28 @@
+- tasks:
+
+# chdir to /home/fedora/{{app_name}}
+  - name: chdir to /home/fedora/{{app_name}}
+    ansible.builtin.shell: cd /home/fedora/{{app_name}}
+    args:
+      chdir: /home/fedora/{{app_name}}
+
+# checkout quarkus branch and track it - git checkout remotes/origin/quarkus --track
+  - name: checkout quarkus branch and track it
+    ansible.builtin.shell: git checkout remotes/origin/quarkus --track
+    args:
+      chdir: /home/fedora/{{app_name}}
+
+# build the quarkus app - mvn clean package
+  - name: build the quarkus app
+    ansible.builtin.shell: mvn clean package
+    args:
+      chdir: /home/fedora/{{app_name}}
+
+# Run the quarkus app locally
+  - name: Run mvn clean quarkus:dev -Dquarkus.http.port=8085
+    ansible.builtin.shell: mvn clean quarkus:dev -Dquarkus.http.port=8085
+    args:
+      chdir: /home/fedora/{{app_name}}
+
+
+

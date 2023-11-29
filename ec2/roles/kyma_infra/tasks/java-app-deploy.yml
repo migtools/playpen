@@ -1,0 +1,63 @@
+---
+# check if java is installed and print version usimd debug module
+- name: Check if Java is installed
+  ansible.builtin.command: 
+    cmd: java -version
+  ignore_errors: true
+  register: java_output
+
+- name: Display Java version
+  debug:
+    var: java_output.stdout_lines
+  when: java_output.rc == 0
+
+- name: Check if Maven is installed
+  ansible.builtin.command: 
+    cmd: mvn --version
+  ignore_errors: true
+  register: mvn_output
+
+- name: Display Maven version
+  debug:
+    var: mvn_output.stdout_lines
+  when: mvn_output.rc == 0
+
+- name: when Maven is not installed
+  debug:
+    msg: "Maven is not installed on the target machine."
+  when: mvn_output.rc != 0
+
+
+- name: Clone the Java EE application
+  ansible.builtin.git:
+    repo: "{{ git_url }}"
+    dest: "/home/fedora/"
+    version: "{{ javaee_git_branch }}"
+
+- name: Deploy the application with Maven to EAP
+  ansible.builtin.shell: mvn clean package 
+  args:
+    chdir: "/home/fedora/{{ app_name }}"
+
+# check if war file is presenr in {{ local_path.stat.path }}/{{ app_name }}/target/
+- name: Check if war file is present
+  ansible.builtin.stat:
+    path: "/home/fedora/{{ app_name }}/target/{{ app_name }}.war"
+  register: warfile
+
+# print the result of war file check
+- name: Display war file status
+  debug:
+    var: warfile.stat.exists
+
+- name: Deploy the application with Maven to EAP
+  ansible.builtin.copy:
+    src: "/home/fedora/{{ app_name }}/target/{{ app_name }}.war"
+    dest: "{{ jboss_install_home }}/deployments/"
+    remote_src: yes
+    owner: "{{ jboss_owner }}"
+    group: "{{ jboss_group }}"
+    mode: '0644'
+  become: true
+
+# todo verify url
