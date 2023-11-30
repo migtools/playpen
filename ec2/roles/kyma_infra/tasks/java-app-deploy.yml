@@ -31,7 +31,7 @@
 - name: Clone the Java EE application
   ansible.builtin.git:
     repo: "{{ git_url }}"
-    dest: "/home/fedora/"
+    dest: "/home/fedora/{{ app_name }}"
     version: "{{ javaee_git_branch }}"
 
 - name: Deploy the application with Maven to EAP

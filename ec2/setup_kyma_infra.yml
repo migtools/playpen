@@ -1,0 +1,9 @@
+---
+  - name: "Run tasks to setup kyma_infra"
+    hosts: "role_{{ project_tag }}_node"
+    roles:
+    # See Role's readme for more info
+    - role: kyma_infra
+      # intended to run as 'fedora' user, so no on 'become'
+      become: no 
+   

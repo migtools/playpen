@@ -1,46 +1,57 @@
 ---
-- tasks:
-  - name: Install Java 11.0.21-tem
-    command: "sdk install java 11.0.21-tem"
 
-  - name: Use Java 11.0.21-tem
-    command: "sdk use java 11.0.21-tem"
+- name: Source SDKMAN initialization script and install Java 11.0.21-tem
+  shell: |
+    source /home/fedora/.sdkman/bin/sdkman-init.sh
+    sdk install java 11.0.21-tem
+    sdk default java 11.0.21-tem
+    sdk use java 11.0.21-tem
+    sdk install quarkus
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: "/home/fedora" 
 
-  - name: Check Maven version
-    command: "mvn -v"
-    register: maven_version
+- name: Check Maven version
+  command: "mvn -v"
+  register: maven_version
 
-  - name: Display Maven version
-    debug:
-      var: maven_version.stdout_lines
+- name: Display Maven version
+  debug:
+    var: maven_version.stdout_lines
 
-  - name: Enable and start Podman socket
-    command: "systemctl --user enable podman.socket --now"
-    
-
-  - name: Start Podman service
-    command: "sudo service podman start"
-    become: true
-
-  - name: Check Podman service status
-    command: "service podman status"
-
-  - name: Display Podman remote socket information
-    command: "podman info | grep -A2 'remoteSocket'"
-    register: podman_info
-
-  - name: Display Podman remote socket information info
-    debug:
-      var: podman_info.stdout_lines
-
-  - name: Set environment variables for Podman
-    ansible.builtin.lineinfile:
-      path: "/home/fedora/.bashrc"
-      line: |
-        export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
-        export TESTCONTAINERS_RYUK_DISABLED=true
+- name: Enable and start Podman socket
+  command: "systemctl --user enable podman.socket --now"
   
-  - name: Reload shell to apply changes
-    command: "source /home/fedora/.bashrc"
-    args:
-      executable: /bin/bash
+
+- name: Start Podman service
+  command: "sudo service podman start"
+  become: true
+
+- name: Check Podman service status
+  command: "service podman status"
+
+- name: Display Podman remote socket information
+  shell: "podman info | grep -A2 'remoteSocket'"
+  become: true
+  register: podman_info
+  
+
+- name: Show Podman info result
+  debug:
+    var: podman_info.stdout_lines
+
+
+- name: Set environment variables for Podman
+  ansible.builtin.lineinfile:
+    path: "/home/fedora/.bashrc"
+    line: |
+      export DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+      export TESTCONTAINERS_RYUK_DISABLED=true
+
+- name: Load Podman environment variables for the current session
+  ansible.builtin.shell: source /home/fedora/.bashrc
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}"

@@ -1,12 +1,9 @@
 ---
 # defaults file for kyma_infra
----
-# defaults file for jboss-app-deploy
-
 maven_deploy: false
 app_path: .
-app_name: helloworld
-git_url: 
+app_name: helloworld-mdb
+git_url: https://github.com/savitharaghunathan/helloworld-mdb.git
 javaee_git_branch: javaee
 quarkus_git_branch: quarkus
 jboss_install_home: /opt/jboss-eap

@@ -1,6 +1,7 @@
 ---
 - name: Install necessary packages
-  dnf:
+  become: true
+  ansible.builtin.dnf:
     name: "{{ item }}"
     state: present
   with_items:
@@ -8,17 +9,6 @@
     - zip
     - podman
     - wget
-    - quarkus
-
-- name: Install SDKMAN
-  command: "curl -s 'https://get.sdkman.io' | bash creates=/home/fedora/.sdkman"
-
-- name: Source SDKMAN initialization script
-  shell: "source /home/fedora/.sdkman/bin/sdkman-init.sh"
-  args:
-    executable: /bin/bash
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/home/fedora/.sdkman/candidates/java/current/bin"
 
 # check if java is installed
 - name: Check if java is installed
@@ -30,16 +20,40 @@
 
 - name: Display java version
   debug: var=java_version.stdout_lines
+  when: java_version.rc != 0
 
-# install java 8.0.392-tem (Temurin)
-- name: Install Java 8.0.392-tem
-  command: "sdk install java 8.0.392-tem"
 
-- name: Make Java 8.0.392-tem default
-  command: "sdk default java 8.0.392-tem"
+- name: Check if SDKMAN is Installed
+  command: "which sdk"
+  register: sdk_check
+  ignore_errors: true
 
-- name: Add sdk use java 8.0.392-tem
-  command: "sdk use java 8.0.392-tem"
+- name: Print SDKMAN Installation Status
+  debug:
+    msg: "SDKMAN is {{ 'installed' if sdk_check.rc == 0 else 'not installed' }}"
+
+- name: Download and install SDKMAN
+  shell: "curl -s 'https://get.sdkman.io' | bash"
+  args:
+    creates: "/home/fedora/.sdkman"
+  when: sdk_check.rc != 0
+
+- name: Add SDKMAN initialization to ~/.bashrc
+  ansible.builtin.lineinfile:
+    path: "/home/fedora/.bashrc"
+    line: "source $HOME/.sdkman/bin/sdkman-init.sh"
+  when: sdk_check.rc != 0
+
+- name: Source SDKMAN initialization script and install Java 8.0.392-tem
+  shell: |
+    source /home/fedora/.sdkman/bin/sdkman-init.sh
+    sdk install java 8.0.392-tem
+    sdk default java 8.0.392-tem
+    sdk use java 8.0.392-tem
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: "/home/fedora" 
 
 # check java version
 - name: Check if java is installed

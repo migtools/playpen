@@ -1,11 +1,10 @@
----
-# tasks file for kyma_infra
+
 
 - name: Include tasks from prereq.yaml
-  include_tasks: prereq.yaml
+  include_tasks: pre-req.yml
 
 - name: Configure Maven
-  include_tasks: configure_maven.yaml
+  include_tasks: install-mvn.yml
 
 - name: include roles jboss-eap
   include_role:
@@ -13,10 +12,10 @@
     tasks_from: main.yml
 
 - name: Deploy Java EE application
-  include_tasks: java-app-deploy.yaml
+  include_tasks: java-app-deploy.yml
 
 - name: setup quarkus env
-  include_tasks: quarkus-podman-setup.yaml
+  include_tasks: quarkus-podman-setup.yml
 
 - name: Deploy Quarkus application
-  include_tasks: quarkus-app-deploy.yaml
+  include_tasks: quarkus-app-deploy.yml
