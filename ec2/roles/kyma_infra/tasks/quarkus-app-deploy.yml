@@ -5,6 +5,7 @@
   args:
     chdir: /home/fedora/{{app_name}}
 
+
 # checkout quarkus branch and track it - git checkout remotes/origin/quarkus --track
 - name: checkout quarkus branch and track it
   ansible.builtin.shell: git checkout remotes/origin/{{ quarkus_git_branch }} --track

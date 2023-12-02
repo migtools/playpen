@@ -14,8 +14,11 @@
 - name: Deploy Java EE application
   include_tasks: java-app-deploy.yml
 
+- name: install docker ce 
+  include_tasks: install-docker.yml
+
 - name: setup quarkus env
-  include_tasks: quarkus-podman-setup.yml
+  include_tasks: quarkus-setup.yml
 
 - name: Deploy Quarkus application
   include_tasks: quarkus-app-deploy.yml

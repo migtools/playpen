@@ -7,7 +7,6 @@
   with_items:
     - git
     - zip
-    - podman
     - wget
 
 # check if java is installed

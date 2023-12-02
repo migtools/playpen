@@ -1,38 +1,41 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+Installs java11 and java8 on a Fedora server that can be used with Quarkus and EAP app deployment respectively.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Provision the fedora server using ./create_infra.sh. Please refer to the [readme](../README.md)
 
-Role Variables
---------------
+How to Run
+----------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+* cd ../
+* Run `./setup_kyma_infra.sh`
 
-Dependencies
-------------
+Background
+-------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+* Infra setup:
+  * Server: fedora 38
+  * docker-ce
+  * EAP 7.4 using java 8
+  * EAP running on port 8080
+  * Quarkus using java 11
+  * Quarkus running on port 8085
+  * Java versions and quarkus installations are managed by sdkman
+  * manual maven install
+  * uses roles from migtools/playpen repo to create ec2 instance and configure eap
+  * note: eap should use standalonefull config
+  * created a new role called kyma_infra - https://github.com/migtools/playpen/pull/5
+  * run the role using the script ./setup_kyma_infra.sh
+  * Manual run down : https://hackmd.io/H04eYLdSS82wt8Ryh8UOSQ
 
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Todo:
+------
+* refactor java installation
+  * Take input of java versions and install that using sdkman
+* Run quarkus in prod mode
+* Note: wildfly role overrides java8 installed by sdkman. Refactor wildfly role to not install java, it is installed already
+* 
