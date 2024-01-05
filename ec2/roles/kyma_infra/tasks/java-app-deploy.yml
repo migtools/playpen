@@ -27,6 +27,20 @@
     msg: "Maven is not installed on the target machine."
   when: mvn_output.rc != 0
 
+# Hack: to avoid ssl certificate error
+- name: Download certificate from maven.repository.redhat.com
+  ansible.builtin.shell: "echo -n | openssl s_client -connect maven.repository.redhat.com:443 -servername maven.repository.redhat.com 2>/dev/null | openssl x509 > /tmp/maven_repository_redhat_com.cert"
+
+# Hack: to avoid ssl certificate error
+- name: Check if certificate is already installed
+  ansible.builtin.shell: "keytool -list -alias mycert -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit"
+  ignore_errors: true
+  register: cert_check
+
+- name: Import certificate into Java keystore
+  ansible.builtin.shell: "keytool -import -alias mycert -keystore $JAVA_HOME/jre/lib/security/cacerts -file /tmp/maven_repository_redhat_com.cert -storepass changeit -noprompt"
+  when: cert_check.rc != 0
+
 
 - name: Clone the Java EE application
   ansible.builtin.git:
