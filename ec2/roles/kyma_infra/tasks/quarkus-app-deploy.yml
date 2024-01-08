@@ -38,7 +38,8 @@
     chdir: /home/fedora/{{ app_name }}
   register: start_server_result
 
-# check if quarkus app is running using pid 
+# check if quarkus process is running using pid 
+# need a better way to check if quarkus app is running
 - name: Check if Quarkus app is running
   ansible.builtin.shell: "ps -p $(cat server.pid) | grep -v PID"
   args:

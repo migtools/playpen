@@ -13,9 +13,8 @@
 - name: Set Maven environment variables
   ansible.builtin.lineinfile:
     path: "/home/fedora/.bashrc"
-    line: |
-      export MAVEN_HOME=/home/fedora/apache-maven-3.9.4
-      export PATH=$MAVEN_HOME/bin:$PATH
+    line: "export MAVEN_HOME=/home/fedora/apache-maven-3.9.4; export PATH=$MAVEN_HOME/bin:$PATH"
+    regexp: "^export MAVEN_HOME=/home/fedora/apache-maven-3.9.4; export PATH=\\$MAVEN_HOME/bin:\\$PATH$"
   become_user: fedora
 
 - name: Load Maven environment variables for the current session

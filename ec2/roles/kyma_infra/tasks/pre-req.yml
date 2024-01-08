@@ -64,4 +64,15 @@
 - name: Display java version
   debug: var=java_version.stdout_lines
   
+- name: Check if the repository directory exists
+  ansible.builtin.stat:
+    path: "/home/fedora/{{ app_name }}"
+  register: app_repo
+  
+# delete java app if the repo exists
+- name: Delete the Java EE application if the repo exists
+  ansible.builtin.file:
+    path: "/home/fedora/{{ app_name }}"
+    state: absent
+  when: app_repo.stat.exists
 
