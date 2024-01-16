@@ -41,6 +41,9 @@
   ansible.builtin.shell: "keytool -import -alias mycert -keystore $JAVA_HOME/jre/lib/security/cacerts -file /tmp/maven_repository_redhat_com.cert -storepass changeit -noprompt"
   when: cert_check.rc != 0
 
+- name: Configure jboss
+  include_tasks: java-app-deploy-prereq.yml
+  when: app_name is defined and app_name == "coolstoredb"
 
 - name: Clone the Java EE application
   ansible.builtin.git:
@@ -51,12 +54,12 @@
 - name: Deploy the application with Maven to EAP
   ansible.builtin.shell: mvn clean package 
   args:
-    chdir: "/home/fedora/{{ app_name }}"
+    chdir: "{{ local_app_path }}"
 
-# check if war file is presenr in {{ local_path.stat.path }}/{{ app_name }}/target/
+
 - name: Check if war file is present
   ansible.builtin.stat:
-    path: "/home/fedora/{{ app_name }}/target/{{ app_name }}.war"
+    path: "{{ war_file_path }}"
   register: warfile
 
 # print the result of war file check
@@ -66,7 +69,7 @@
 
 - name: Deploy the application with Maven to EAP
   ansible.builtin.copy:
-    src: "/home/fedora/{{ app_name }}/target/{{ app_name }}.war"
+    src: "{{ war_file_path }}"
     dest: "{{ jboss_install_home }}/deployments/"
     remote_src: yes
     owner: "{{ jboss_owner }}"

@@ -45,3 +45,4 @@
     name: docker
     state: restarted
 
+- meta: reset_connection

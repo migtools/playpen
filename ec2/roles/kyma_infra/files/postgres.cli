@@ -1,0 +1,20 @@
+# Batch script to add the PostgreSQL driver to the WildFly server configuration
+
+# Start batching commands
+batch
+
+# Add the  PostgreSQL database driver to the datasources subsystem
+
+/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql)
+
+data-source add --name=CoolstoreDS --jndi-name=java:jboss/datasources/CoolstoreDS --driver-name=postgresql --connection-url=jdbc:postgresql://127.0.0.1:5432/postgresDB --user-name=postgresUser --password=postgresPW
+
+jms-topic add --topic-address=topic.orders --entries=topic/orders
+
+/subsystem=messaging-activemq/server=default:write-attribute(name=cluster-password, value=password)
+
+# Run the batch commands
+run-batch
+
+# Reload the server configuration
+reload

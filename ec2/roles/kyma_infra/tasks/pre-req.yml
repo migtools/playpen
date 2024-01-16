@@ -68,7 +68,6 @@
   ansible.builtin.stat:
     path: "/home/fedora/{{ app_name }}"
   register: app_repo
-  
 # delete java app if the repo exists
 - name: Delete the Java EE application if the repo exists
   ansible.builtin.file:

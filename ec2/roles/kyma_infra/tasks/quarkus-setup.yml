@@ -1,11 +1,11 @@
 ---
 
-- name: Source SDKMAN initialization script and install Java 11.0.21-tem
+- name: Source SDKMAN initialization script and install {{ quarkus_java_version}}
   shell: |
     source /home/fedora/.sdkman/bin/sdkman-init.sh
-    sdk install java 11.0.21-tem
-    sdk default java 11.0.21-tem
-    sdk use java 11.0.21-tem
+    sdk install java {{ quarkus_java_version}}
+    sdk default java {{ quarkus_java_version}}
+    sdk use java {{ quarkus_java_version}}
     sdk install quarkus
   args:
     executable: /bin/bash
@@ -19,3 +19,4 @@
 - name: Display Maven version
   debug:
     var: maven_version.stdout_lines
+

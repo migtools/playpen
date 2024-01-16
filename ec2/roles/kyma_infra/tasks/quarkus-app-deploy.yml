@@ -1,41 +1,68 @@
 ---
+
 # chdir to /home/fedora/{{app_name}}
 - name: chdir to /home/fedora/{{app_name}}
   ansible.builtin.shell: cd /home/fedora/{{app_name}}
   args:
     chdir: /home/fedora/{{app_name}}
+  when: same_repo == true
 
 
 # checkout quarkus branch and track it - git checkout remotes/origin/quarkus --track
 - name: checkout quarkus branch and track it
   ansible.builtin.shell: git checkout remotes/origin/{{ quarkus_git_branch }} --track
   args:
-    chdir: /home/fedora/{{app_name}}
+    chdir: /home/fedora/{{ app_name }}
+  when: same_repo == true
+
+
+- name: Add new Git remote
+  ansible.builtin.shell:
+    cmd: "git remote add quarkus {{ git_url_quarkus }}"
+    chdir: "/home/fedora/{{ app_name }}" 
+  when: same_repo == false
+
+- name: Checkout branch from remote
+  ansible.builtin.shell:
+    cmd: |
+      git fetch quarkus "+refs/heads/quarkus-3.2:refs/remotes/quarkus/quarkus-3.2"
+      git checkout -b quarkus-3.2 quarkus/quarkus-3.2
+    chdir: "/home/fedora/{{ app_name }}"  
+  when: same_repo == false  
+
 
 - name: Check if Docker is accessible using socket
   ansible.builtin.wait_for:
     path: /var/run/docker.sock
     state: present
     timeout: 10
-  ignore_errors: true
+  ignore_errors: false
   register: docker_socket_status
 
 - name: Display Docker socket status
   ansible.builtin.debug:
     var: docker_socket_status
 
+# display docker version
+- name: Display Docker version
+  ansible.builtin.shell: docker version
+  register: docker_version
+
+- name: Display Docker version
+  ansible.builtin.debug:
+    var: docker_version.stdout_lines
 
 # build the quarkus app - mvn clean package
 - name: build the quarkus app
   ansible.builtin.shell: mvn clean package
   args:
-    chdir: /home/fedora/{{app_name}}
+    chdir: "{{ local_app_path }}"
 
 # Run the quarkus app locally
 - name: Start the server
   ansible.builtin.shell: "nohup mvn clean quarkus:dev -Dquarkus.http.port=8085 > server.log 2>&1 & echo $! > server.pid"
   args:
-    chdir: /home/fedora/{{ app_name }}
+    chdir: "{{ local_app_path }}"
   register: start_server_result
 
 # check if quarkus process is running using pid 
@@ -43,7 +70,7 @@
 - name: Check if Quarkus app is running
   ansible.builtin.shell: "ps -p $(cat server.pid) | grep -v PID"
   args:
-    chdir: /home/fedora/{{ app_name }}
+    chdir: "{{ local_app_path }}"
   register: quarkus_app_running
   until: quarkus_app_running.stdout != ""
   retries: 10

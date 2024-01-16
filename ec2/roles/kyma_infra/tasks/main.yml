@@ -3,6 +3,9 @@
 - name: Include tasks from prereq.yaml
   include_tasks: pre-req.yml
 
+- name: install docker ce 
+  include_tasks: install-docker.yml
+
 - name: Configure Maven
   include_tasks: install-mvn.yml
 
@@ -14,8 +17,6 @@
 - name: Deploy Java EE application
   include_tasks: java-app-deploy.yml
 
-- name: install docker ce 
-  include_tasks: install-docker.yml
 
 - name: setup quarkus env
   include_tasks: quarkus-setup.yml

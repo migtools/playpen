@@ -1,12 +1,44 @@
 ---
 # defaults file for kyma_infra
-maven_deploy: false
-app_path: .
-app_name: helloworld-mdb
-git_url: https://github.com/savitharaghunathan/helloworld-mdb.git
-javaee_git_branch: javaee
-quarkus_git_branch: quarkus
+
 jboss_install_home: /opt/jboss-eap
 jboss_owner: jboss-eap
 jboss_group: jboss-eap
 
+#helloworld-mdb
+#maven_deploy: false
+#app_path: .
+#app_name: helloworld-mdb
+#git_url: https://github.com/savitharaghunathan/helloworld-mdb.git
+#local_app_path: /home/fedora/{{ app_name }}
+#javaee_git_branch: javaee
+#quarkus_git_branch: quarkus
+#same_repo: true
+#war_file_path: '{{ local_app_path }}/target/{{ app_name }}.war'
+#quarkus_java_version: 11.0.21-tem
+
+
+# kitchensink 
+maven_deploy: false
+app_path: kitchensink
+app_name: jboss-eap-quickstarts
+local_app_path: /home/fedora/{{ app_name }}/{{ app_path }}
+war_file_path: '{{ local_app_path }}/target/{{ app_path }}.war'
+git_url: https://github.com/windup/jboss-eap-quickstarts.git
+git_url_quarkus: https://github.com/tqvarnst/jboss-eap-quickstarts.git
+javaee_git_branch: 7.4.x
+quarkus_git_branch: quarkus-3.2
+same_repo: false
+quarkus_java_version: 17.0.9-tem
+
+# coolstoredb
+# maven_deploy: false
+# app_path: .
+# app_name: coolstoredb
+# git_url: https://github.com/mathianasj/eap-coolstore-monolith
+# local_app_path: /home/fedora/{{ app_name }}
+# javaee_git_branch: main
+# quarkus_git_branch: quarkus-migration
+# same_repo: true
+# war_file_path: '{{ local_app_path }}/ROOT.war'
+# quarkus_java_version: 11.0.21-tem 
