@@ -58,4 +58,13 @@
     tasks_from: jboss_cli.yml
 
 
-
+# install keycloak using middleware_automation.keycloak role
+- name: Install Keycloak
+  include_role:
+    name: middleware_automation.keycloak.keycloak
+  vars:
+    #keycloak_version: 20.0.5
+    keycloak_admin_password: adminchangemelater
+    #keycloak_download_url: https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip
+    #keycloak_http_port: 8081
+    keycloak_jboss_port_offset: 1
