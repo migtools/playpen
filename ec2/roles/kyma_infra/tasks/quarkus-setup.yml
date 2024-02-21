@@ -1,0 +1,22 @@
+---
+
+- name: Source SDKMAN initialization script and install {{ quarkus_java_version}}
+  shell: |
+    source /home/fedora/.sdkman/bin/sdkman-init.sh
+    sdk install java {{ quarkus_java_version}}
+    sdk default java {{ quarkus_java_version}}
+    sdk use java {{ quarkus_java_version}}
+    sdk install quarkus
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: "/home/fedora" 
+
+- name: Check Maven version
+  command: "mvn -v"
+  register: maven_version
+
+- name: Display Maven version
+  debug:
+    var: maven_version.stdout_lines
+

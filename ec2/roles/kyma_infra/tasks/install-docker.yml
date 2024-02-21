@@ -1,0 +1,48 @@
+- name: Install required packages
+  become: true
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - dnf-plugins-core
+
+- name: Set up Docker repository
+  become: true
+  command: "dnf config-manager --add-repo=https://download.docker.com/linux/fedora/docker-ce.repo"
+
+- name: Install Docker
+  become: true
+  dnf:
+    name: "{{ item }}" 
+    state: present
+  loop:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+
+- name: Start and enable Docker service
+  become: true
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add user to the docker group
+  become: true
+  user:
+    name: "fedora"
+    groups: docker
+    append: yes
+
+# run command newgrp docker
+- name: Run command newgrp docker
+  command: "newgrp docker"
+
+# restart docker service
+- name: Restart docker service
+  become: true
+  service:
+    name: docker
+    state: restarted
+
+- meta: reset_connection

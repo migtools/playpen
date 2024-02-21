@@ -1,6 +1,4 @@
 ---
-
-
 - name: Check if Maven is installed
   ansible.builtin.command: 
     cmd: mvn --version

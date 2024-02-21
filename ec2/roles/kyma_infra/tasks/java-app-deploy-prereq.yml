@@ -1,0 +1,70 @@
+---
+# check if docker container myPostgresDb is running
+- name: Check if docker container myPostgresDb is running
+  ansible.builtin.shell: docker ps -a | grep myPostgresDb
+  register: docker_container_status
+  ignore_errors: true
+
+# create docker db container
+- name: Create docker db container
+  ansible.builtin.shell: docker run --name myPostgresDb -p 5432:5432 -e POSTGRES_USER=postgresUser -e POSTGRES_PASSWORD=postgresPW -e POSTGRES_DB=postgresDB -d postgres:9
+  become_user: fedora
+  when: docker_container_status.rc != 0
+
+- name: "JBoss EAP installation and configuration 1"
+  vars:
+    wildfly_install_workdir: '/opt'
+    wildfly_version: '7.4.0'
+    install_name: jboss-eap
+    wildfly_archive_filename: "{{ install_name }}-{{ wildfly_version }}.zip"
+    wildfly_user: "{{ install_name }}"
+    wildfly_group: "{{ install_name }}"
+    wildfly_config_base: standalone-full.xml
+    wildfly_home: "{{ wildfly_install_workdir }}/{{ install_name }}-{{ 7.4 }}"
+    wildfly_driver_module_name: "org.postgresql"
+    wildfly_driver_version: "42.5.4"
+    wildfly_driver_jar_filename: "postgresql-{{ wildfly_driver_version }}.jar"
+    wildfly_driver_jar_url: "https://jdbc.postgresql.org/download/postgresql-42.5.4.jar"
+  include_role:
+    name: middleware_automation.wildfly.wildfly_driver
+
+#restart jboss server
+- name: Restart JBoss EAP
+  ansible.builtin.service:
+    name: jboss-eap
+    state: restarted
+  become: true
+# copy files/postgres.cli to /opt/jboss-eap-7.4/bin
+- name: Copy postgres.cli to /opt/jboss-eap-7.4/bin
+  ansible.builtin.copy:
+    src: files/postgres.cli
+    dest: /opt/jboss-eap-7.4/bin
+    owner: jboss-eap
+    group: jboss-eap
+    mode: 0644
+  become: true
+
+
+- name: "Execute jboss-cli script to configure db and messagequeue"
+  vars:
+    wildfly_install_workdir: '/opt'
+    wildfly_version: '7.4.0'
+    install_name: jboss-eap
+    wildfly_home: "{{ wildfly_install_workdir }}/{{ install_name }}-{{ 7.4 }}"
+    wildfly_no_restart_after_patch: False
+    jboss_cli_file: /opt/jboss-eap-7.4/bin/postgres.cli
+  include_role:
+    name: middleware_automation.wildfly.wildfly_utils
+    tasks_from: jboss_cli.yml
+
+
+# install keycloak using middleware_automation.keycloak role
+- name: Install Keycloak
+  include_role:
+    name: middleware_automation.keycloak.keycloak
+  vars:
+    #keycloak_version: 20.0.5
+    keycloak_admin_password: adminchangemelater
+    #keycloak_download_url: https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip
+    #keycloak_http_port: 8081
+    keycloak_jboss_port_offset: 1
