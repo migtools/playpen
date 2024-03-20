@@ -1,0 +1,17 @@
+---
+# tasks file for kai_deploy_eap
+
+
+- name: Include tasks from prereq.yaml
+  include_tasks: pre-req.yml
+
+- name: Configure Maven
+  include_tasks: install-mvn.yml
+
+- name: include roles jboss-eap
+  include_role:
+    name: jboss-eap
+    tasks_from: main.yml
+
+- name: Deploy Java EE application
+  include_tasks: java-app-deploy.yml

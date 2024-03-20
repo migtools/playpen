@@ -1,0 +1,39 @@
+---
+- name: Download Apache Maven
+  get_url:
+    url: "https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz"
+    dest: "/home/fedora/apache-maven-3.9.4-bin.tar.gz"
+
+- name: Extract Maven archive
+  ansible.builtin.unarchive:
+    src: "/home/fedora/apache-maven-3.9.4-bin.tar.gz"
+    dest: "/home/fedora/"
+    remote_src: true
+
+- name: Set Maven environment variables
+  ansible.builtin.lineinfile:
+    path: "/home/fedora/.bashrc"
+    line: "export MAVEN_HOME=/home/fedora/apache-maven-3.9.4; export PATH=$MAVEN_HOME/bin:$PATH"
+    regexp: "^export MAVEN_HOME=/home/fedora/apache-maven-3.9.4; export PATH=\\$MAVEN_HOME/bin:\\$PATH$"
+  become_user: fedora
+
+- name: Load Maven environment variables for the current session
+  ansible.builtin.shell: source /home/fedora/.bashrc
+  args:
+    executable: /bin/bash
+  environment:
+    PATH: "{{ ansible_env.PATH }}"
+
+# register this output to a variable
+- name: Check Maven version
+  command: "mvn -v"
+  args:
+    chdir: "/home/fedora/"
+  become_user: fedora
+  register: mvn_output
+
+# print the mvn version
+- name: Display Maven version
+  debug:
+    var: mvn_output.stdout_lines
+  when: mvn_output.rc == 0
