@@ -8,7 +8,7 @@
 # create podman db container
 - name: Create podman db container
   ansible.builtin.shell: podman run --name myPostgresDb -p 5432:5432 -e POSTGRES_USER=postgresUser -e POSTGRES_PASSWORD=postgresPW -e POSTGRES_DB=postgresDB -d docker.io/library/postgres:10
-  become_user: fedora
+  become: true
   when: podman_container_status.rc != 0
 
 - name: "JBoss EAP installation and configuration 1"
@@ -68,3 +68,4 @@
     #keycloak_download_url: https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip
     #keycloak_http_port: 8081
     keycloak_jboss_port_offset: 1
+    #keycloak_host: "{{ inventory_hostname }}"

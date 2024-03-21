@@ -1,6 +1,7 @@
 ---
   - name: "Run tasks to setup kai EAP app deployment"
     hosts: "role_{{ project_tag }}_node"
+    gather_facts: true
     roles:
     # See Role's readme for more info
     - role: kai_deploy_eap
