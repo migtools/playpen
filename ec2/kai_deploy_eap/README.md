@@ -7,7 +7,7 @@ Requirements
 ------------
 
 * Provision the server: Pre-req can be found in [readme](../README.md)
-Run `./create_infra.sh`
+Run `cd.. && ./create_infra.sh`
 
 * We will be using offline installation of Red Hat EAP for this role. Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.0.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.0.zip`. Make sure the file type is `zip`.
 
