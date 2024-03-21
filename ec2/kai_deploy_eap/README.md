@@ -28,3 +28,9 @@ Dependencies
 Deploy EAP coolstore app
 ----------------
 * Run `cd.. && ./setup_kai_eap_infra.sh`
+
+How to access the app
+----------------
+Once the ansible role succeeds, navigate to - `http://<your_ec2_ip>:8080`
+
+Note: It can take a few min to start and load the app. You might see the default JBoss EAP page until the app is deployed.
