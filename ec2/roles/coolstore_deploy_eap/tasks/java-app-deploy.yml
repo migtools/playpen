@@ -51,6 +51,25 @@
     dest: "/home/fedora/{{ app_name }}"
     version: "{{ javaee_git_branch }}"
 
+- name: Create keycloak.json on remote host
+  ansible.builtin.shell:
+    cmd: |
+      echo '{
+          "realm": "eap",
+          "auth-server-url": "https://{{ inventory_hostname }}:8444/",
+          "ssl-required": "external",
+          "resource": "eap-app",
+          "public-client": true,
+          "confidential-port": 0
+      }' > /tmp/keycloak.json
+
+- name: Copy keycloak.json to remote directory
+  ansible.builtin.copy:
+    src: /tmp/keycloak.json
+    dest: /home/fedora/coolstoredb/src/main/webapp/
+    mode: '0644'
+    remote_src: yes
+
 - name: Deploy the application with Maven to EAP
   ansible.builtin.shell: mvn clean package 
   args:
@@ -77,4 +96,11 @@
     mode: '0644'
   become: true
 
-# todo verify url
+
+- name: Print Keycloak config url
+  ansible.builtin.debug:
+    msg: "https://{{ inventory_hostname }}:8444"
+
+- name: Print app url
+  ansible.builtin.debug:
+    msg: "http://{{ inventory_hostname }}:8080"
