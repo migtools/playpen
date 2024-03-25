@@ -63,9 +63,11 @@
   include_role:
     name: middleware_automation.keycloak.keycloak
   vars:
-    #keycloak_version: 20.0.5
-    keycloak_admin_password: adminchangemelater
+    #keycloak_version: 23.0.1
+    keycloak_admin_password: "adminchangemelater"
     #keycloak_download_url: https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip
-    #keycloak_http_port: 8081
     keycloak_jboss_port_offset: 1
-    #keycloak_host: "{{ inventory_hostname }}"
+    keycloak_management_port_bind_address: 0.0.0.0
+    keycloak_host: "{{ inventory_hostname }}"
+    keycloak_frontend_url_force: true
+    keycloak_frontend_url: "{{ keycloak_url }}/auth"
