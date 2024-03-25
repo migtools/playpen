@@ -27,7 +27,7 @@ Dependencies
 
 Deploy EAP coolstore app
 ----------------
-* Run `cd.. && ./setup_kai_eap_infra.sh`
+* Run `cd.. && ./setup_coolstore_app.sh`
 
 How to access the app
 ----------------
