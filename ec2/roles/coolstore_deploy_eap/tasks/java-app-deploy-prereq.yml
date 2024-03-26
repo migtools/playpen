@@ -93,14 +93,6 @@
   include_role:
     name: middleware_automation.keycloak.keycloak_quarkus
   vars:
-    # #keycloak_version: 23.0.1
-    # keycloak_admin_password: "adminchangemelater"
-    # #keycloak_download_url: https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip
-    # keycloak_jboss_port_offset: 1
-    # keycloak_management_port_bind_address: 0.0.0.0
-    # keycloak_host: "{{ inventory_hostname }}"
-    # keycloak_frontend_url_force: true
-    # keycloak_frontend_url: "{{ keycloak_url }}/auth"
     keycloak_quarkus_admin_pass: "adminchangemelater"
     keycloak_quarkus_dest: /usr/keycloak
     keycloak_quarkus_frontend_url: "https://{{ inventory_hostname }}:8444/"
@@ -111,3 +103,4 @@
     keycloak_quarkus_key_file: /etc/pki/tls/certs/key.pem
     keycloak_quarkus_cert_file: /etc/pki/tls/certs/cert.pem
     keycloak_quarkus_version: 20.0.5
+    keycloak_quarkus_offline_install: true
