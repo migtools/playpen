@@ -11,6 +11,8 @@ Run `cd.. && ./create_infra.sh`
 
 * We will be using offline installation of Red Hat EAP for this role. Please [download](https://access.redhat.com/jbossnetwork/restricted/listSoftware.html?downloadType=distributions&product=appplatform&version=7.4) `jboss-eap-7.4.0.zip` from the RH Customer Portal and place it in `../ec2/jboss-eap-7.4.0.zip`. Make sure the file type is `zip`.
 
+* We will be using offline installation for keycloak. Download [keycloak-20.0.5.zip](https://github.com/keycloak/keycloak/releases/download/20.0.5/keycloak-20.0.5.zip) and place it under ../ec2
+File relative path eg: ec2/keycloak-20.0.5.zip 
 
 Role Variables
 --------------
