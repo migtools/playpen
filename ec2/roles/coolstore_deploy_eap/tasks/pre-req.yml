@@ -1,0 +1,77 @@
+---
+- name: Install necessary packages
+  become: true
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - zip
+    - wget
+    - podman
+
+# check if java is installed
+- name: Check if java is installed
+  command: "java -version"
+  register: java_version
+  ignore_errors: true
+
+# display output of java -version
+
+- name: Display java version
+  debug: var=java_version.stdout_lines
+  when: java_version.rc != 0
+
+
+- name: Check if SDKMAN is Installed
+  command: "which sdk"
+  register: sdk_check
+  ignore_errors: true
+
+- name: Print SDKMAN Installation Status
+  debug:
+    msg: "SDKMAN is {{ 'installed' if sdk_check.rc == 0 else 'not installed' }}"
+
+- name: Download and install SDKMAN
+  shell: "curl -s 'https://get.sdkman.io' | bash"
+  args:
+    creates: "/home/fedora/.sdkman"
+  when: sdk_check.rc != 0
+
+- name: Add SDKMAN initialization to ~/.bashrc
+  ansible.builtin.lineinfile:
+    path: "/home/fedora/.bashrc"
+    line: "source $HOME/.sdkman/bin/sdkman-init.sh"
+  when: sdk_check.rc != 0
+
+- name: Source SDKMAN initialization script and install Java 8.0.392-tem
+  shell: |
+    source /home/fedora/.sdkman/bin/sdkman-init.sh
+    sdk install java 8.0.392-tem
+    sdk default java 8.0.392-tem
+    sdk use java 8.0.392-tem
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: "/home/fedora" 
+
+# check java version
+- name: Check if java is installed
+  command: "java -version"
+  register: java_version
+  ignore_errors: true
+
+# print java version and add a console statement that says sdk instal
+- name: Display java version
+  debug: var=java_version.stdout_lines
+  
+- name: Check if the repository directory exists
+  ansible.builtin.stat:
+    path: "/home/fedora/{{ app_name }}"
+  register: app_repo
+# delete java app if the repo exists
+- name: Delete the Java EE application if the repo exists
+  ansible.builtin.file:
+    path: "/home/fedora/{{ app_name }}"
+    state: absent
+  when: app_repo.stat.exists

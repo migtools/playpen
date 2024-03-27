@@ -6,4 +6,5 @@ collections:
 - middleware_automation.common
 - middleware_automation.wildfly
 - kubernetes.core
+- middleware_automation.keycloak
 

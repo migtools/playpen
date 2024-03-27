@@ -92,6 +92,22 @@
             ports:
             - 9990
             cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 8081
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 9991
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 8443
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            ports:
+            - 8444
+            cidr_ip: 0.0.0.0/0
         state: "present"
       register: security_group
 

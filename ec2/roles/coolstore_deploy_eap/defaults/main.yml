@@ -1,0 +1,18 @@
+---
+# defaults file for kai_deploy_eap
+# This file contains the default variables for the role
+jboss_install_home: /opt/jboss-eap
+jboss_owner: jboss-eap
+jboss_group: jboss-eap
+
+# coolstoredb
+maven_deploy: false
+app_path: .
+app_name: coolstoredb
+git_url: https://github.com/mathianasj/eap-coolstore-monolith
+local_app_path: /home/fedora/{{ app_name }}
+javaee_git_branch: main
+quarkus_git_branch: quarkus-migration
+same_repo: true
+war_file_path: '{{ local_app_path }}/target/ROOT.war'
+quarkus_java_version: 17.0.9-tem
